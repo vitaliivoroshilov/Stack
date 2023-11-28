@@ -4,88 +4,88 @@ using namespace std;
 template <class T>
 class Stack
 {
+private:
+	T* pMem;
+	int top;
+	int memSize;
+
 public:
-	T* begin;
-	T* end;
-	int size;
-	Stack()
+
+	Stack(int _n = 100): memSize(_n)
 	{
-		size = 100;
-		begin = new T[size];
-		end = begin;
-	}
-	Stack(int _n)
-	{
-		if (_n < 0)
+		if (memSize < 0)
 			throw("");
-		size = _n;
-		begin = new T[size];
-		end = begin;
+		pMem = new T[memSize];
+		top = 0;
 	}
-	Stack(const Stack& s): size(s.size)
+
+	Stack(const Stack& s) : memSize(s.memSize), top(s.top)
 	{
-		begin = new T[size];
-		for (int i = 0; i < size; i++)
-			begin[i] = s.begin[i];
-		end = begin + (s.end - s.begin);
+		pMem = new T[memSize];
+		for (int i = 0; i < memSize; i++)
+			pMem[i] = s.pMem[i];
 	}
+
 	~Stack()
 	{
-		delete[] begin;
+		delete[] pMem;
 	}
-	void push(T el)
+
+	void push(T elem)
 	{
-		if (end - begin == size)
+		if (top == memSize)
 		{
-			size = 1.3 * size;
-			T* tmp = new T[size];
-			for (int i = 0; i < (end - begin); i++)
-				tmp[i] = begin[i];
-			end = tmp + (end - begin);
-			delete[] begin;
-			begin = tmp;
+			memSize *= 1.3;
+			T* tmpMem = new T[memSize];
+			for (int i = 0; i < top; i++)
+				tmpMem[i] = pMem[i];
+			delete[] pMem;
+			pMem = tmpMem;
 		}
-		*end = el;
-		end++;
+		pMem[top++] = elem;
 	}
-	int getSize()
+
+	int getMemSize()
 	{
-		return size;
+		return memSize;
 	}
+
 	bool isEmpty()
 	{
-		return begin == end;
+		return top == 0;
 	}
-	T top()
+
+	T getTop()
 	{
-		if (begin == end)
+		if (isEmpty())
 			throw("");
 		else
-			return *(--end);
+			return pMem[--top];
 	}
+
 	void pop()
 	{
-		if (begin == end)
+		if (isEmpty())
 			throw("");
 		else
-			end--;
+			top--;
 	}
+
 	bool operator==(const Stack& s)
 	{
-		if (s.end - s.begin != end - begin)
+		if (top != s.top)
 			return false;
 		else
-		{
-			for (int i = 0; i < end - begin; i++)
-				if (begin[i] != s.begin[i])
+			for (int i = 0; i < top; i++)
+				if (pMem[i] != s.pMem[i])
 					return false;
-		}
 		return true;
 	}
+
 	friend ostream& operator<<(ostream& out, const Stack& s)
 	{
-		for (int i = 0; i < (s.end - s.begin); i++)
-			out << s.begin[i] << " ";
+		for (int i = 0; i < s.top; i++)
+			out << s.pMem[i] << " ";
 		return out;
 	}
 };
